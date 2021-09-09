@@ -1,26 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Syncfusion.Windows.Shared;
-using System.Collections.ObjectModel;
-using Syncfusion.Windows.Controls.Gantt;
-using System.ComponentModel;
-using System.Collections.Specialized;
-
+﻿
 namespace Gantt_RowColor
 {
+    using System;
+    using System.Linq;
+    using Syncfusion.Windows.Shared;
+    using System.Collections.ObjectModel;
+    using Syncfusion.Windows.Controls.Gantt;
+    using System.ComponentModel;
+    using System.Collections.Specialized;
+
     public class Task : NotificationObject
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="Task"/> class.
-        /// </summary>
-        public Task()
-        {
-            ChildTask = new ObservableCollection<Task>();
-            Predecessor = new ObservableCollection<Predecessor>();
-            Resource = new ObservableCollection<Resource>();
-        }
+        #region Fields
 
         private int id;
         private string name;
@@ -32,6 +23,24 @@ namespace Gantt_RowColor
         private ObservableCollection<Task> childTask;
         private ObservableCollection<Predecessor> predecessor;
         private RowType rowType;
+
+        #endregion
+
+        #region Constructor
+        
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Task"/> class.
+        /// </summary>
+        public Task()
+        {
+            ChildTask = new ObservableCollection<Task>();
+            Predecessor = new ObservableCollection<Predecessor>();
+            Resource = new ObservableCollection<Resource>();
+        }
+
+        #endregion
+
+        #region Public properties
 
         public RowType RowType
         {
@@ -57,23 +66,26 @@ namespace Gantt_RowColor
         {
             get
             {
-                return Math.Round(complete, 2);
+                return Math.Round(this.complete, 2);
             }
+
             set
             {
                 if (value <= 100)
                 {
-                    if (childTask != null && childTask.Count >= 1)
+                    if (this.childTask != null && this.childTask.Count >= 1)
                     {
                         var sum = 0d;
-                        complete = ((childTask.Aggregate(sum, (cur, task) => cur + task.Complete)) / childTask.Count);
+                        this.complete = this.childTask.Aggregate(sum, (cur, task) => cur + task.Complete) / this.childTask.Count;
                     }
                     else
-                        complete = value;
-                    RaisePropertyChanged("Complete");
+                    {
+                        this.complete = value;
+                    }
+
+                    this.RaisePropertyChanged("Complete");
                 }
             }
-
         }
 
         /// <summary>
@@ -84,17 +96,17 @@ namespace Gantt_RowColor
         /// </value>
         public ObservableCollection<Resource> Resource
         {
-            get 
-            { 
-                return resource; 
+            get
+            {
+                return this.resource;
             }
+
             set
             {
-                resource = value;
-                RaisePropertyChanged("Resource");
+                this.resource = value;
+                this.RaisePropertyChanged("Resource");
             }
         }
-
 
         /// <summary>
         /// Gets or sets the duration.
@@ -106,33 +118,33 @@ namespace Gantt_RowColor
         {
             get
             {
-                if (childTask != null && childTask.Count >= 1)
+                if (this.childTask != null && this.childTask.Count >= 1)
                 {
                     var sum = new TimeSpan(0, 0, 0, 0);
-                    sum = childTask.Aggregate(sum, (current, task) => current + task.Duration);
+                    sum = this.childTask.Aggregate(sum, (current, task) => current + task.Duration);
                     return sum;
                 }
 
                 /// The Difference Between the EndDate and StartDate is Calculated exactly.
-                duration = endDate.Subtract(stDate);
-                return duration;
+                this.duration = this.endDate.Subtract(stDate);
+                return this.duration;
             }
 
             set
             {
-                if (childTask != null && childTask.Count >= 1)
+                if (this.childTask != null && this.childTask.Count >= 1)
                 {
                     var sum = new TimeSpan(0, 0, 0, 0);
-                    sum = childTask.Aggregate(sum, (current, task) => current + task.Duration);
-                    duration = sum;
+                    sum = this.childTask.Aggregate(sum, (current, task) => current + task.Duration);
+                    this.duration = sum;
                     return;
                 }
 
-                duration = value;
+                this.duration = value;
 
-                /// End date is being calcuated here to make the change in endate based on duration. Duration is interlinked with start and end date, so will affect both based on the change.
-                EndDate = stDate.AddDays(Double.Parse(duration.TotalDays.ToString()));
-
+                // End date is being calcuated here to make the change in endate based on duration.
+                // Duration is interlinked with start and end date, so will affect both based on the change.
+                this.EndDate = this.stDate.AddDays(Double.Parse(this.duration.TotalDays.ToString()));
             }
         }
 
@@ -144,24 +156,31 @@ namespace Gantt_RowColor
         /// </value>
         public DateTime EndDate
         {
-            get 
-            { 
-                return endDate; 
+            get
+            {
+                return endDate;
             }
+
             set
             {
-                if (childTask != null && childTask.Count >= 1)
+                if (this.childTask != null && this.childTask.Count >= 1)
                 {
                     /// If this task is a parent task, then it should have the maximum end time. Hence comparing the date with maximum date of its children.
 
-                    if (value >= childTask.Max(s => s.EndDate) && endDate != value)
-                        endDate = value;
+                    if (value >= this.childTask.Max(s => s.EndDate) && this.endDate != value)
+                    {
+                        this.endDate = value;
+                    }
                 }
                 else
+                {
                     endDate = value;
-                RaisePropertyChanged("EndDate");
-                /// Duration changed is invoked to notify the chagne in duration based on the new end date.
-                RaisePropertyChanged("Duration");
+                }
+
+                this.RaisePropertyChanged("EndDate");
+
+                // Duration changed is invoked to notify the chagne in duration based on the new end date.
+                this.RaisePropertyChanged("Duration");
             }
         }
 
@@ -175,23 +194,28 @@ namespace Gantt_RowColor
         {
             get
             {
-                return stDate;
+                return this.stDate;
             }
             set
             {
                 /// If this task is a parent task, then it should have the minimum start time. Hence comparing the date with minimum date of its children.
 
-                if (childTask != null && childTask.Count >= 1)
+                if (this.childTask != null && this.childTask.Count >= 1)
                 {
-                    if (value <= childTask.Min(s => s.stDate) && stDate != value)
-                        stDate = value;
+                    if (value <= this.childTask.Min(s => s.stDate) && this.stDate != value)
+                    {
+                        this.stDate = value;
+                    }
                 }
                 else
-                    stDate = value;
-                RaisePropertyChanged("StDate");
+                {
+                    this.stDate = value;
+                }
 
-                /// Duration chagned is invoked to notify the chagne in duration based on the new start date.
-                RaisePropertyChanged("Duration");
+                this.RaisePropertyChanged("StDate");
+
+                // Duration chagned is invoked to notify the chagne in duration based on the new start date.
+                this.RaisePropertyChanged("Duration");
             }
         }
 
@@ -203,14 +227,15 @@ namespace Gantt_RowColor
         /// </value>
         public string Name
         {
-            get 
-            { 
-                return name; 
+            get
+            {
+                return this.name;
             }
+
             set
             {
-                name = value;
-                RaisePropertyChanged("Name");
+                this.name = value;
+                this.RaisePropertyChanged("Name");
             }
         }
 
@@ -222,14 +247,15 @@ namespace Gantt_RowColor
         /// </value>
         public int Id
         {
-            get 
-            { 
-                return id; 
+            get
+            {
+                return this.id;
             }
+
             set
             {
-                id = value;
-                RaisePropertyChanged("Id");
+                this.id = value;
+                this.RaisePropertyChanged("Id");
             }
         }
 
@@ -241,16 +267,18 @@ namespace Gantt_RowColor
         /// </value>
         public ObservableCollection<Predecessor> Predecessor
         {
-            get 
-            { 
-                return predecessor; 
+            get
+            {
+                return this.predecessor;
             }
             set
             {
-                predecessor = value;
-                RaisePropertyChanged("Predecessor");
+                this.predecessor = value;
+                this.RaisePropertyChanged("Predecessor");
             }
         }
+
+        #endregion
 
         #region ChildTask Collection
 
@@ -262,32 +290,34 @@ namespace Gantt_RowColor
         {
             get
             {
-                if (childTask == null)
+                if (this.childTask == null)
                 {
-                    childTask = new ObservableCollection<Task>();
-                    /// Collection changed of child tasks are hooked to listen and refresh the parent node based on the changes made in Child.
-                    childTask.CollectionChanged += ChildNodesCollectionChanged;
+                    this.childTask = new ObservableCollection<Task>();
+                    
+                    // Collection changed of child tasks are hooked to listen and refresh the parent node based on the changes made in Child.
+                    this.childTask.CollectionChanged += this.ChildNodesCollectionChanged;
                 }
-                return childTask;
+
+                return this.childTask;
             }
             set
             {
-                childTask = value;
-                ///Collection changed of child tasks are hooked to listen and refresh the parent node based on the changes made in Child.
-
-                childTask.CollectionChanged += ChildNodesCollectionChanged;
-
+                this.childTask = value;
+                
+                //Collection changed of child tasks are hooked to listen and refresh the parent node based on the changes made in Child.
+                this.childTask.CollectionChanged += this.ChildNodesCollectionChanged;
                 if (value.Count > 0)
                 {
-                    childTask.ToList().ForEach(n =>
+                    this.childTask.ToList().ForEach(n =>
                     {
-                        /// To listen the changes occuring in child task.
-                        n.PropertyChanged += ChildNodePropertyChanged;
+                        // To listen the changes occuring in child task.
+                        n.PropertyChanged += this.ChildNodePropertyChanged;
 
                     });
-                    UpdateData();
+                    this.UpdateData();
                 }
-                RaisePropertyChanged("ChildTask");
+
+                this.RaisePropertyChanged("ChildTask");
             }
         }
 
@@ -299,10 +329,12 @@ namespace Gantt_RowColor
         void ChildNodePropertyChanged(object sender, PropertyChangedEventArgs e)
         {
             if (e.PropertyName != null)
+            {
                 if (e.PropertyName == "StDate" || e.PropertyName == "EndDate" || e.PropertyName == "Complete")
                 {
-                    UpdateData();
+                    this.UpdateData();
                 }
+            }
         }
 
         /// <summary>
@@ -311,9 +343,9 @@ namespace Gantt_RowColor
         private void UpdateData()
         {
             /// Updating the start and end date based on the chagne occur in the date of child task
-            StDate = childTask.Select(c => c.StDate).Min();
-            EndDate = childTask.Select(c => c.EndDate).Max();
-            Complete = (childTask.Aggregate(0d, (cur, task) => cur + task.Complete)) / childTask.Count;
+            this.StDate = this.childTask.Select(c => c.StDate).Min();
+            this.EndDate = this.childTask.Select(c => c.EndDate).Max();
+            this.Complete = this.childTask.Aggregate(0d, (cur, task) => cur + task.Complete) / this.childTask.Count;
         }
 
         /// <summary>
@@ -327,21 +359,25 @@ namespace Gantt_RowColor
             {
                 foreach (Task node in e.NewItems)
                 {
-                    node.PropertyChanged += ChildNodePropertyChanged;
+                    node.PropertyChanged += this.ChildNodePropertyChanged;
                 }
             }
             else
             {
                 foreach (Task node in e.OldItems)
-                    node.PropertyChanged -= ChildNodePropertyChanged;
+                {
+                    node.PropertyChanged -= this.ChildNodePropertyChanged;
+                }
             }
-            UpdateData();
+
+            this.UpdateData();
         }
 
         #endregion
     }
 
-
+    #region Enum
+    
     public enum RowType
     {
         Projectrow,
@@ -350,5 +386,7 @@ namespace Gantt_RowColor
         ProductionRow,
         TaskRow
     }
+
+    #endregion
 
 }
