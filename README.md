@@ -9,7 +9,7 @@ This can be achieved by considering each node item and update that style through
 
 [XAML]
 ```
-<gantt:GanttControl x:Name="Gantt" Margin="50"
+		<gantt:GanttControl x:Name="Gantt" Margin="50"
                             ItemsSource="{Binding TaskDetails}"
                             UseAutoUpdateHierarchy="False"
                             VisualStyle="Metro"
@@ -34,7 +34,7 @@ This can be achieved by considering each node item and update that style through
 [C#]
 
 ```
-private void Gantt_OnLoaded(object sender, RoutedEventArgs e)
+		private void Gantt_OnLoaded(object sender, RoutedEventArgs e)
         {
             this.Gantt.GanttGrid.Loaded += GanttGrid_Loaded;
         }

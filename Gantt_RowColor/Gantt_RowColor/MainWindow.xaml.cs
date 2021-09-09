@@ -1,39 +1,34 @@
-﻿using Syncfusion.Windows.Controls.Grid;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-
+﻿
 namespace Gantt_RowColor
 {
+    using System.Windows;
+    using System.Windows.Media;
+    using Syncfusion.Windows.Controls.Grid;
+
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
     public partial class MainWindow : Window
     {
+        #region Constructor
+
         public MainWindow()
         {
             InitializeComponent();
         }
+
+        #endregion
+        
+        #region Private methods
+
         private void Gantt_OnLoaded(object sender, RoutedEventArgs e)
         {
-            this.Gantt.GanttGrid.Loaded += GanttGrid_Loaded;
+            this.Gantt.GanttGrid.Loaded += this.GanttGrid_Loaded;
         }
 
         private void GanttGrid_Loaded(object sender, RoutedEventArgs e)
         {
-            this.Gantt.GanttGrid.Model.QueryCellInfo += Model_QueryCellInfo;
-
+            this.Gantt.GanttGrid.Model.QueryCellInfo += this.Model_QueryCellInfo;
             this.Gantt.GanttGrid.InternalGrid.PopulateTree();
             this.Gantt.GanttGrid.InternalGrid.ExpandAllNodes();
         }
@@ -74,5 +69,6 @@ namespace Gantt_RowColor
             }
         }
 
+        #endregion
     }
 }

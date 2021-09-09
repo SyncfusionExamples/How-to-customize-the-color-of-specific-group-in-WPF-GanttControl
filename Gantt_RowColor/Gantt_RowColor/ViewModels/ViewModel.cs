@@ -1,30 +1,34 @@
-using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.ComponentModel;
-using System.Linq;
-using System.Collections.Specialized;
-using System.Text;
-using Syncfusion.Windows.Controls.Gantt;
 
 namespace Gantt_RowColor
 {
+    using System;
+    using System.Collections.ObjectModel;
+
     public class ViewModel
     {
+        #region Fields
+        
         private int id = 0;
+        private DateTime date;
+        private ObservableCollection<Task> _taskDetails;
 
-        private DateTime date = DateTime.Today;
+        #endregion
 
+        #region Constructor
+        
         /// <summary>
         /// Initializes a new instance of the <see cref="ViewModel"/> class.
         /// </summary>
         public ViewModel()
         {
-            _taskDetails = this.GetData();
+            this.date = DateTime.Today;
+            this._taskDetails = this.GetData();
         }
 
-        private ObservableCollection<Task> _taskDetails;
+        #endregion
 
+        #region Properties
+        
         /// <summary>
         /// Gets or sets the appointment item source.
         /// </summary>
@@ -33,46 +37,38 @@ namespace Gantt_RowColor
         {
             get
             {
-                return _taskDetails;
+                return this._taskDetails;
             }
             set
             {
-                _taskDetails = value;
+                this._taskDetails = value;
             }
         }
 
-        private List<Mode> _validationMode;
+        #endregion
 
-        public List<Mode> ValidationMode
-        {
-            get
-            {
-                return _validationMode;
-            }
-            set
-            {
-                _validationMode = value;
-            }
-        }
-
+        #region Private methods
+        
         /// <summary>
         /// Gets the data.
         /// </summary>
         /// <returns></returns>
-        public ObservableCollection<Task> GetData()
+        private ObservableCollection<Task> GetData()
         {
             var data = new ObservableCollection<Task>();
+
             data.Add(new Task { Id = this.id++, RowType = RowType.Projectrow, Name = "Project Row", StDate = this.date, EndDate = this.date.AddDays(2) });
             data[0].ChildTask.Add(new Task { Id = this.id++, RowType = RowType.SubProjectRow, Name = "Sub Project Row", StDate = this.date, EndDate = this.date.AddDays(2) });
             data[0].ChildTask[0].ChildTask.Add(new Task { Id = this.id++, RowType = RowType.AnalysisRow, Name = "Analysis Row", StDate = this.date, EndDate = this.date.AddDays(2) });
             data[0].ChildTask[0].ChildTask[0].ChildTask.Add(new Task { Id = this.id++, RowType = RowType.ProductionRow, Name = "Production Row", StDate = this.date, EndDate = this.date.AddDays(2) });
-           
+
             data[0].ChildTask[0].ChildTask.Add(new Task { Id = this.id++, RowType = RowType.AnalysisRow, Name = "Analysis Row", StDate = this.date, EndDate = this.date.AddDays(2) });
             data[0].ChildTask[0].ChildTask[1].ChildTask.Add(new Task { Id = this.id++, RowType = RowType.ProductionRow, Name = "Production Row", StDate = this.date, EndDate = this.date.AddDays(2) });
             data[0].ChildTask[0].ChildTask[1].ChildTask[0].ChildTask.Add(new Task { Id = this.id++, RowType = RowType.TaskRow, Name = "Task Row", StDate = this.date, EndDate = this.date.AddDays(2) });
 
             return data;
         }
-    }
 
+        #endregion
+    }
 }
